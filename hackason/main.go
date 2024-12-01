@@ -52,7 +52,8 @@ func main() {
 	closeDBWithSysCall()
 
 	log.Println("Listening...")
-	if err := http.ListenAndServe(":8000", nil); err != nil {
+	port := os.Getenv("PORT")
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
 	}
 }

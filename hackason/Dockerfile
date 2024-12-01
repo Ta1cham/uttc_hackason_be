@@ -10,8 +10,6 @@ FROM gcr.io/distroless/base-debian12
 
 WORKDIR /root
 
-EXPOSE 8000
-
 COPY --from=build /go/src/app/app .
 
 CMD ["./app"]
