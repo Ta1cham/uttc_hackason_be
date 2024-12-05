@@ -10,19 +10,18 @@ type UserDao struct {
 	DB *sql.DB
 }
 
-func CreateDao(db *sql.DB) *UserDao {
+func NewUserDao(db *sql.DB) *UserDao {
 	dao := &UserDao{DB: db}
 	return dao
 }
 
-func (dao *UserDao) RegisterUser(id string) error {
+func (dao *UserDao) RegisterUser(user *model.UserInfoForHTTPPOST) error {
 	db := dao.DB
 	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
-	data := model.PostData
-	if _, err := tx.Exec("INSERT INTO user (id, name, age) VALUES (?, ?, ?)", id, data.Name, data.Age); err != nil {
+	if _, err := tx.Exec("INSERT INTO user (id, name, age) VALUES (?, ?, ?)", user.ID, user.Name, user.Age); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -32,14 +31,14 @@ func (dao *UserDao) RegisterUser(id string) error {
 	return nil
 }
 
-func (dao *UserDao) SearchUser(name string) ([]model.UserResForHTTPGET, error) {
+func (dao *UserDao) SearchUser(id string) ([]model.UserResForHTTPGET, error) {
 	db := dao.DB
 	tx, err := db.Begin()
 	if err != nil {
 		log.Printf("")
 		return nil, err
 	}
-	rows, err := tx.Query("SELECT id, name, age FROM user WHERE name = ?", name)
+	rows, err := tx.Query("SELECT id, name, age FROM user WHERE id = ?", id)
 	if err != nil {
 		tx.Rollback()
 		log.Printf("")

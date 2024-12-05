@@ -7,6 +7,7 @@ type UserResForHTTPGET struct {
 }
 
 type UserInfoForHTTPPOST struct {
+	ID   string `json:"id"`
 	Name string `json:"name"`
 	Age  int    `json:"age"`
 }
