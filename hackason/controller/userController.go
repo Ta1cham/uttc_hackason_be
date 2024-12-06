@@ -36,7 +36,7 @@ func (uc *UserController) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 	content := map[string]string{
 		"id":   user.ID,
 		"name": user.Name,
@@ -60,12 +60,18 @@ func (uc *UserController) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	users, err := uc.UserUsecase.LoginUser(id)
+	if err != nil {
+		log.Printf("fail: usecase.LoginUser, %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	bytes, err := json.Marshal(users)
 	if err != nil {
 		log.Printf("fail: json.Marshal, %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-type", "application/json")
 	w.Write(bytes)
 

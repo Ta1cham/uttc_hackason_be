@@ -2,6 +2,7 @@ package dao
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"uttc_hackason_be/model"
 )
@@ -21,7 +22,7 @@ func (dao *UserDao) RegisterUser(user *model.UserInfoForHTTPPOST) error {
 	if err != nil {
 		return err
 	}
-	if _, err := tx.Exec("INSERT INTO user (id, name, age) VALUES (?, ?, ?)", user.ID, user.Name, user.Age); err != nil {
+	if _, err := tx.Exec("INSERT INTO user (id, name) VALUES (?, ?)", user.ID, user.Name); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -31,39 +32,39 @@ func (dao *UserDao) RegisterUser(user *model.UserInfoForHTTPPOST) error {
 	return nil
 }
 
-func (dao *UserDao) SearchUser(id string) ([]model.UserResForHTTPGET, error) {
+func (dao *UserDao) SearchUser(id string) (model.UserResForHTTPGET, error) {
 	db := dao.DB
+	var u model.UserResForHTTPGET
 	tx, err := db.Begin()
 	if err != nil {
-		log.Printf("")
-		return nil, err
+		log.Printf("failied to begin transaction")
+		return u, err
 	}
-	rows, err := tx.Query("SELECT id, name, age FROM user WHERE id = ?", id)
-	if err != nil {
-		tx.Rollback()
-		log.Printf("")
-		return nil, err
-	}
-	users := make([]model.UserResForHTTPGET, 0)
-	for rows.Next() {
-		var u model.UserResForHTTPGET
-		if err := rows.Scan(&u.ID, &u.Name, &u.Age); err != nil {
-			log.Printf("fail: rows.Scan, %v\n", err)
 
-			if err := rows.Close(); err != nil {
-				log.Printf("fail: rows.Close(), %v\n", err)
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			log.Fatalf("Transaction failed: %v", p)
+		} else if err != nil {
+			tx.Rollback()
+			log.Fatalf("Transaction rolled back due to error: %v", err)
+		} else {
+			commitErr := tx.Commit()
+			if err != nil {
+				log.Fatalf("Failed to commit transaction: %v", commitErr)
+				err = commitErr
 			}
-			return nil, err
 		}
-		users = append(users, u)
+	}()
+
+	query := "SELECT id, name FROM user WHERE id = ?"
+	err = tx.QueryRow(query, id).Scan(&u.ID, &u.Name)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return u, nil
+		}
+		return u, err
 	}
-	if err := rows.Close(); err != nil {
-		log.Printf("rows.Close(), %v\n", err)
-		return nil, err
-	}
-	if err := tx.Commit(); err != nil {
-		log.Printf("")
-		return nil, err
-	}
-	return users, nil
+
+	return u, nil
 }

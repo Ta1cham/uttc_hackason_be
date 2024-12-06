@@ -5,6 +5,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"os"
@@ -55,8 +56,11 @@ func main() {
 
 	closeDBWithSysCall()
 
+	c := cors.Default()
+	handler := c.Handler(r)
+
 	log.Println("Listening...")
-	if err := http.ListenAndServe(":8000", r); err != nil {
+	if err := http.ListenAndServe(":8000", handler); err != nil {
 		log.Fatal(err)
 	}
 }

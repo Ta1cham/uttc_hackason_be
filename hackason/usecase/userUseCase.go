@@ -19,7 +19,7 @@ func NewUserUseCase(db *sql.DB) *UserUseCase {
 }
 
 func isInvalid(data *model.UserInfoForHTTPPOST) bool {
-	if data.Name == "" || utf8.RuneCountInString(data.Name) > 50 || data.Age < 20 || data.Age > 80 {
+	if data.Name == "" || utf8.RuneCountInString(data.Name) > 30 {
 		return true
 	}
 	return false
@@ -32,11 +32,11 @@ func (uc *UserUseCase) RegisterUser(user *model.UserInfoForHTTPPOST) error {
 	return uc.UserDao.RegisterUser(user)
 }
 
-func (uc *UserUseCase) LoginUser(id string) ([]model.UserResForHTTPGET, error) {
-	users, err := uc.UserDao.SearchUser(id)
+func (uc *UserUseCase) LoginUser(id string) (model.UserResForHTTPGET, error) {
+	user, err := uc.UserDao.SearchUser(id)
 	if err != nil {
 		log.Printf("search user %s error: %v", id, err)
-		return nil, err
+		return user, err
 	}
-	return users, nil
+	return user, nil
 }
