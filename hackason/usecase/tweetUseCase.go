@@ -40,8 +40,8 @@ func (tc *TweetUseCase) MakeTweet(tweet *model.TweetInfoForHTTPPOST) error {
 //	return
 //}
 
-func (tc *TweetUseCase) GetTweet(pNum int) ([]model.TweetInfoForHTTPGET, error) {
-	tweets, err := tc.TweetDao.GetTweet(pNum)
+func (tc *TweetUseCase) GetTweet(pNum int, currentUser string) ([]model.TweetInfoForHTTPGET, error) {
+	tweets, err := tc.TweetDao.GetTweet(pNum, currentUser)
 	if err != nil {
 		return nil, err
 	}

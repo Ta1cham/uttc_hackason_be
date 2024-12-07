@@ -51,13 +51,14 @@ func (tc *TweetController) MakeTweet(w http.ResponseWriter, r *http.Request) {
 
 func (tc *TweetController) GetTweet(w http.ResponseWriter, r *http.Request) {
 	page := r.URL.Query().Get("page")
+	currentUser := r.URL.Query().Get("current_user")
 
 	if page == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	pNum, _ := strconv.Atoi(page)
-	tweets, err := tc.TweetUseCase.GetTweet(pNum)
+	tweets, err := tc.TweetUseCase.GetTweet(pNum, currentUser)
 	if err != nil {
 		log.Printf("fail: tc.TweetUseCase.GetTweet, %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)

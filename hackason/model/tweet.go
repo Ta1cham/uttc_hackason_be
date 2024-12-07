@@ -11,7 +11,8 @@ type TweetInfoForHTTPGET struct {
 	Uid      string  `json:"uid"`
 	Content  string  `json:"content"`
 	Imurl    *string `json:"imurl"`
-	Likes    int     `json:"likes"`
 	PostedAt string  `json:"posted_at"`
 	Uname    string  `json:"uname"`
+	Likes    int     `json:"likes"`
+	IsLike   bool    `json:"is_like"`
 }
