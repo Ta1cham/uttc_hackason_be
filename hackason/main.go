@@ -52,7 +52,9 @@ func main() {
 	r := mux.NewRouter()
 
 	userController := controller.NewUserController(db)
+	tweetController := controller.NewTweetController(db)
 	userController.RegiterRoutes(r)
+	tweetController.RegisterRoute(r)
 
 	closeDBWithSysCall()
 

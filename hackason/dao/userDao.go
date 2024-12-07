@@ -51,8 +51,8 @@ func (dao *UserDao) SearchUser(id string) (model.UserResForHTTPGET, error) {
 		} else {
 			commitErr := tx.Commit()
 			if err != nil {
-				log.Fatalf("Failed to commit transaction: %v", commitErr)
 				err = commitErr
+				log.Fatalf("Failed to commit transaction: %v", commitErr)
 			}
 		}
 	}()
