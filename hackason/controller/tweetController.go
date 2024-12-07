@@ -52,13 +52,18 @@ func (tc *TweetController) MakeTweet(w http.ResponseWriter, r *http.Request) {
 func (tc *TweetController) GetTweet(w http.ResponseWriter, r *http.Request) {
 	page := r.URL.Query().Get("page")
 	currentUser := r.URL.Query().Get("current_user")
+	pid := r.URL.Query().Get("pid")
+	if pid == "" {
+		log.Println("pid is empty")
+	}
 
 	if page == "" {
+		log.Println("page is empty")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	pNum, _ := strconv.Atoi(page)
-	tweets, err := tc.TweetUseCase.GetTweet(pNum, currentUser)
+	tweets, err := tc.TweetUseCase.GetTweet(pNum, currentUser, pid)
 	if err != nil {
 		log.Printf("fail: tc.TweetUseCase.GetTweet, %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -75,7 +80,27 @@ func (tc *TweetController) GetTweet(w http.ResponseWriter, r *http.Request) {
 	w.Write(bytes)
 }
 
+func (tc *TweetController) GetTweetById(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	currentUser := r.URL.Query().Get("current_user")
+	tweet, err := tc.TweetUseCase.GetTweetById(id, currentUser)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	bytes, err := json.Marshal(tweet)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(bytes)
+}
+
 func (tc *TweetController) RegisterRoute(r *mux.Router) {
 	r.HandleFunc("/tweets", tc.MakeTweet).Methods("POST")
 	r.HandleFunc("/tweets", tc.GetTweet).Methods("GET")
+	r.HandleFunc("/tweet", tc.GetTweetById).Methods("GET")
 }

@@ -40,10 +40,18 @@ func (tc *TweetUseCase) MakeTweet(tweet *model.TweetInfoForHTTPPOST) error {
 //	return
 //}
 
-func (tc *TweetUseCase) GetTweet(pNum int, currentUser string) ([]model.TweetInfoForHTTPGET, error) {
-	tweets, err := tc.TweetDao.GetTweet(pNum, currentUser)
+func (tc *TweetUseCase) GetTweet(pNum int, currentUser string, pid string) ([]model.TweetInfoForHTTPGET, error) {
+	tweets, err := tc.TweetDao.GetTweet(pNum, currentUser, pid)
 	if err != nil {
 		return nil, err
 	}
 	return tweets, nil
+}
+
+func (tc *TweetUseCase) GetTweetById(id string, currentUser string) (model.TweetInfoForHTTPGET, error) {
+	tweet, err := tc.TweetDao.GetTweetById(id, currentUser)
+	if err != nil {
+		return model.TweetInfoForHTTPGET{}, err
+	}
+	return tweet, nil
 }

@@ -2,6 +2,7 @@ package model
 
 type TweetInfoForHTTPPOST struct {
 	Uid     string `json:"uid"`
+	Pid     string `json:"pid"`
 	Content string `json:"content"`
 	Imurl   string `json:"imurl"`
 }
@@ -15,4 +16,5 @@ type TweetInfoForHTTPGET struct {
 	Uname    string  `json:"uname"`
 	Likes    int     `json:"likes"`
 	IsLike   bool    `json:"is_like"`
+	Reps     int     `json:"reps"`
 }

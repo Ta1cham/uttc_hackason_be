@@ -16,37 +16,37 @@ import (
 
 var db *sql.DB
 
-func init() {
-	mysqlUser := os.Getenv("MYSQL_USER")
-	mysqlPwd := os.Getenv("MYSQL_PWD")
-	mysqlHost := os.Getenv("MYSQL_HOST")
-	mysqlDatabase := os.Getenv("MYSQL_DATABASE")
-
-	connStr := fmt.Sprintf("%s:%s@%s/%s", mysqlUser, mysqlPwd, mysqlHost, mysqlDatabase)
-	var err error
-	db, err = sql.Open("mysql", connStr)
-	if err != nil {
-		log.Fatalf("fail: sql.Open, %v\n", err)
-	}
-	if err := db.Ping(); err != nil {
-		log.Fatalf("fail: _db.Ping, %v\n", err)
-	}
-}
-
 //func init() {
-//	mysqlUser := "user"
-//	mysqlUserpsw := "password"
-//	mysqlDatabase := "mydatabase"
+//	mysqlUser := os.Getenv("MYSQL_USER")
+//	mysqlPwd := os.Getenv("MYSQL_PWD")
+//	mysqlHost := os.Getenv("MYSQL_HOST")
+//	mysqlDatabase := os.Getenv("MYSQL_DATABASE")
 //
-//	_db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@(localhost:3306)/%s", mysqlUser, mysqlUserpsw, mysqlDatabase))
+//	connStr := fmt.Sprintf("%s:%s@%s/%s", mysqlUser, mysqlPwd, mysqlHost, mysqlDatabase)
+//	var err error
+//	db, err = sql.Open("mysql", connStr)
 //	if err != nil {
 //		log.Fatalf("fail: sql.Open, %v\n", err)
 //	}
-//	if err := _db.Ping(); err != nil {
+//	if err := db.Ping(); err != nil {
 //		log.Fatalf("fail: _db.Ping, %v\n", err)
 //	}
-//	db = _db
 //}
+
+func init() {
+	mysqlUser := "user"
+	mysqlUserpsw := "password"
+	mysqlDatabase := "mydatabase"
+
+	_db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@(localhost:3306)/%s", mysqlUser, mysqlUserpsw, mysqlDatabase))
+	if err != nil {
+		log.Fatalf("fail: sql.Open, %v\n", err)
+	}
+	if err := _db.Ping(); err != nil {
+		log.Fatalf("fail: _db.Ping, %v\n", err)
+	}
+	db = _db
+}
 
 func main() {
 	r := mux.NewRouter()
