@@ -60,6 +60,7 @@ func (tc *TweetController) GetTweet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	pNum, _ := strconv.Atoi(page)
+	log.Println(pNum, currentUser, pid)
 	tweets, err := tc.TweetUseCase.GetTweet(pNum, currentUser, pid)
 	if err != nil {
 		log.Printf("fail: tc.TweetUseCase.GetTweet, %v\n", err)

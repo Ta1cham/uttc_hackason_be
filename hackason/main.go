@@ -54,9 +54,11 @@ func main() {
 	userController := controller.NewUserController(db)
 	tweetController := controller.NewTweetController(db)
 	likesController := controller.NewLikesController(db)
+	noteController := controller.NewNoteController(db)
 	userController.RegiterRoutes(r)
 	tweetController.RegisterRoute(r)
 	likesController.RegisterRoute(r)
+	noteController.RegiterRoutes(r)
 
 	closeDBWithSysCall()
 

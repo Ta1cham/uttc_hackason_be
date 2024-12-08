@@ -65,9 +65,10 @@ func (dao *TweetDao) GetTweet(pNum int, currentUser string, pid string) ([]model
 
 	baseQuery := `
         SELECT tweet.id, tweet.uid, tweet.content, tweet.image, tweet.posted_at,
-               user.name AS uname, COALESCE(user.image, '') AS uimage
+               user.name AS uname, COALESCE(user.image, '') AS uimage, COALESCE(notes.note, '') AS note
         FROM tweet
         JOIN user ON user.id = tweet.uid
+        LEFT JOIN notes ON notes.tweet_id = tweet.id
     `
 
 	var query string
@@ -89,9 +90,12 @@ func (dao *TweetDao) GetTweet(pNum int, currentUser string, pid string) ([]model
 	var tweets []model.TweetInfoForHTTPGET
 	for rows.Next() {
 		var tweet model.TweetInfoForHTTPGET
-		if err := rows.Scan(&tweet.Id, &tweet.Uid, &tweet.Content, &tweet.Imurl, &tweet.PostedAt, &tweet.Uname, &tweet.Uimage); err != nil {
+		if err := rows.Scan(&tweet.Id, &tweet.Uid, &tweet.Content, &tweet.Imurl, &tweet.PostedAt, &tweet.Uname, &tweet.Uimage, &tweet.Note); err != nil {
 			return nil, err
 		}
+
+		log.Println("GetTweets")
+		log.Println(tweet)
 
 		var likesCount int
 		likesCountQuery := `
@@ -132,7 +136,6 @@ func (dao *TweetDao) GetTweet(pNum int, currentUser string, pid string) ([]model
 			return nil, err
 		}
 		tweet.Reps = reps
-
 		tweets = append(tweets, tweet)
 	}
 
@@ -168,15 +171,19 @@ func (dao *TweetDao) GetTweetById(id string, currentUser string) (model.TweetInf
 
 	query := `
 		SELECT tweet.id, tweet.uid, tweet.content, tweet.image, tweet.posted_at,
-               user.name AS uname, COALESCE(user.image, '') AS uimage
+               user.name AS uname, COALESCE(user.image, '') AS uimage, COALESCE(notes.note, '') AS note
         FROM tweet
         JOIN user ON user.id = tweet.uid
+        LEFT JOIN notes ON notes.tweet_id = tweet.id
 		WHERE tweet.id = ?;`
 
-	err = tx.QueryRow(query, id).Scan(&tweet.Id, &tweet.Uid, &tweet.Content, &tweet.Imurl, &tweet.PostedAt, &tweet.Uname, &tweet.Uimage)
+	err = tx.QueryRow(query, id).Scan(&tweet.Id, &tweet.Uid, &tweet.Content, &tweet.Imurl, &tweet.PostedAt, &tweet.Uname, &tweet.Uimage, &tweet.Note)
 	if err != nil {
 		return model.TweetInfoForHTTPGET{}, err
 	}
+
+	log.Println("GetTweetById")
+	log.Println(tweet)
 
 	var likesCount int
 	likesCountQuery := `
