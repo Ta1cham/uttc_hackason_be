@@ -17,4 +17,5 @@ type TweetInfoForHTTPGET struct {
 	Likes    int     `json:"likes"`
 	IsLike   bool    `json:"is_like"`
 	Reps     int     `json:"reps"`
+	Uimage   string  `json:"uimage"`
 }

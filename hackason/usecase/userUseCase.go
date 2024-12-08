@@ -25,6 +25,18 @@ func isInvalid(data *model.UserInfoForHTTPPOST) bool {
 	return false
 }
 
+func editInvalid(data *model.EditInfoForHTTPPOST) bool {
+	if data.Name == "" || utf8.RuneCountInString(data.Name) > 30 {
+		log.Printf(data.Name)
+		return true
+	}
+	if bio := utf8.RuneCountInString(data.Bio); bio > 140 {
+		log.Printf("editInvalid bio: %v", bio)
+		return true
+	}
+	return false
+}
+
 func (uc *UserUseCase) RegisterUser(user *model.UserInfoForHTTPPOST) error {
 	if isInvalid(user) {
 		return fmt.Errorf("invalid user")
@@ -39,4 +51,11 @@ func (uc *UserUseCase) LoginUser(id string) (model.UserResForHTTPGET, error) {
 		return user, err
 	}
 	return user, nil
+}
+
+func (uc *UserUseCase) EditProfile(info *model.EditInfoForHTTPPOST) error {
+	if editInvalid(info) {
+		return fmt.Errorf("invalid user")
+	}
+	return uc.UserDao.EditProfile(info)
 }

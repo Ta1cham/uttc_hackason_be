@@ -59,13 +59,13 @@ func (uc *UserController) Login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	users, err := uc.UserUsecase.LoginUser(id)
+	user, err := uc.UserUsecase.LoginUser(id)
 	if err != nil {
 		log.Printf("fail: usecase.LoginUser, %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	bytes, err := json.Marshal(users)
+	bytes, err := json.Marshal(user)
 	if err != nil {
 		log.Printf("fail: json.Marshal, %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -74,11 +74,27 @@ func (uc *UserController) Login(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-type", "application/json")
 	w.Write(bytes)
+}
 
+func (uc *UserController) EditProfile(w http.ResponseWriter, r *http.Request) {
+	var info model.EditInfoForHTTPPOST
+	if err := json.NewDecoder(r.Body).Decode(&info); err != nil {
+		log.Printf("fail: json.NewDecoder.Decode, %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if err := uc.UserUsecase.EditProfile(&info); err != nil {
+		log.Printf("fail: usecase.EditProfile, %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (uc *UserController) RegiterRoutes(r *mux.Router) {
 
 	r.HandleFunc("/user", uc.Register).Methods("POST")
 	r.HandleFunc("/user", uc.Login).Methods("GET")
+	r.HandleFunc("/userchange", uc.EditProfile).Methods("POST")
 }

@@ -53,9 +53,6 @@ func (tc *TweetController) GetTweet(w http.ResponseWriter, r *http.Request) {
 	page := r.URL.Query().Get("page")
 	currentUser := r.URL.Query().Get("current_user")
 	pid := r.URL.Query().Get("pid")
-	if pid == "" {
-		log.Println("pid is empty")
-	}
 
 	if page == "" {
 		log.Println("page is empty")
