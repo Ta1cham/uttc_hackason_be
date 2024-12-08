@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"uttc_hackason_be/dao"
 	"uttc_hackason_be/model"
@@ -25,8 +26,7 @@ func NewNoteUseCase(db *sql.DB) *NoteUseCase {
 func genNote(content string) (string, error) {
 	const location = "asia-northeast1"
 	const modelName = "gemini-1.5-flash-002"
-	//projectId := os.Getenv("GCP_PROJECT_ID")
-	projectId := "term6-taichi-ogawa"
+	projectId := os.Getenv("GCP_PROJECT_ID")
 
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, projectId, location)
